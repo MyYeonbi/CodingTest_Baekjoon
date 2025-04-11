@@ -1,68 +1,60 @@
 import java.util.*;
 
 public class Main {
-    // 방향 배열 상하좌우
-    static int[] dx = {-1, 1, 0, 0};
-    static int[] dy = {0, 0, -1, 1 };
-
-    // 변수 선언
     static int N;
     static int[][] map;
     static boolean[][] visited;
-    static List<Integer> countList = new ArrayList<>();
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
+    static int homeCount;
+    static List<Integer> result = new ArrayList<>();
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         N = sc.nextInt();
+        sc.nextLine(); // 개행 제거
         map = new int[N][N];
         visited = new boolean[N][N];
 
         for (int i = 0; i < N; i++) {
-            String line = sc.next();
+            String line = sc.nextLine();
             for (int j = 0; j < N; j++) {
                 map[i][j] = line.charAt(j) - '0';
             }
         }
 
+        int count = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (!visited[i][j] && map[i][j] == 1) {
-                    int count = bfs(i, j);
-                    countList.add(count);
-                }
-            }
-        }
-
-        Collections.sort(countList);
-        System.out.println(countList.size());
-        for (int count : countList) {
-            System.out.println(count);
-        }
-    }
-
-    static int bfs(int startX, int startY) {
-        Queue<int[]> queue = new LinkedList<>();
-        visited[startX][startY] = true;
-        queue.offer(new int[]{startX, startY});
-        int count = 1;
-
-        while (!queue.isEmpty()) {
-            int[] current = queue.poll();
-            int x = current[0];
-            int y = current[1];
-
-            for (int i = 0; i < 4; i++) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-                if (nx >= 0 && nx < N && ny >= 0 && ny < N
-                        && !visited[nx][ny] && map[nx][ny] == 1) {
-                    visited[nx][ny] = true;
-                    queue.offer(new int[]{nx, ny});
+                if (map[i][j] == 1 && !visited[i][j]) {
+                    homeCount = 1;
+                    dfs(i, j);
+                    result.add(homeCount);
                     count++;
                 }
             }
         }
 
-        return count;
+        System.out.println(count);
+        Collections.sort(result);
+        for (int n : result) {
+            System.out.println(n);
+        }
+    }
+
+    public static void dfs(int x, int y) {
+        visited[x][y] = true;
+
+        for (int d = 0; d < 4; d++) {
+            int nx = x + dx[d];
+            int ny = y + dy[d];
+
+            if (nx >= 0 && ny >= 0 && nx < N && ny < N) {
+                if (map[nx][ny] == 1 && !visited[nx][ny]) {
+                    homeCount++;
+                    dfs(nx, ny);
+                }
+            }
+        }
     }
 }
